@@ -12,8 +12,11 @@ options.add_experimental_option("excludeSwitches", ["enable-automation"])
 #cloudflare bypass
 options.add_experimental_option('useAutomationExtension', False) 
 options.add_argument("--disable-blink-features=AutomationControlled")
+#win
+# d = webdriver.Chrome('D:\\Users\Stephen\Dev\Git\Python\chromedriver.exe', options=options,service_log_path='NUL')
+#mac
+d = webdriver.Chrome(options=options,service_log_path='NUL')
 
-d = webdriver.Chrome('D:\\Users\Stephen\Dev\Git\Python\chromedriver.exe', options=options,service_log_path='NUL')
 
 def test1():
     l = []
