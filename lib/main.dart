@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shuffle/mediaEngine/data.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,11 +16,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
   bool toggle = false;
-  final Uri _url = Uri.parse(
-      'https://www.hotstar.com/in/tv/modern-family/8549/pilot/1770001008');
+
   void _launchUrl() async {
+    final Uri _url = Uri.parse(randoMize());
     if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
       throw 'Could not launch $_url';
     }
@@ -25,6 +27,10 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(statusBarColor: Colors.transparent
+            //color set to transperent or set your own color
+            ));
     return Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
