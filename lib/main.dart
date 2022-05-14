@@ -3,6 +3,7 @@ import 'package:shuffle/Screens/search.dart';
 import 'package:shuffle/mediaEngine/data.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
+import 'dart:ui';
 
 void main() {
   runApp(const MyApp());
@@ -43,20 +44,49 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           home: SafeArea(
             child: Scaffold(
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {},
-                child: const Icon(
-                  Icons.settings_outlined,
-                  color: Colors.black,
-                  size: 32,
+              floatingActionButton: Padding(
+                padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Builder(builder: (context) {
+                      return FloatingActionButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Me();
+                              });
+                          // Me();
+                        },
+                        child: const Icon(
+                          Icons.rocket_launch_outlined,
+                          color: Colors.black,
+                          size: 32,
+                        ),
+                        highlightElevation: 0,
+                        backgroundColor: Colors.transparent,
+                        splashColor: Colors.black,
+                        elevation: 0,
+                      );
+                    }),
+                    FloatingActionButton(
+                      onPressed: () {},
+                      child: const Icon(
+                        Icons.settings_outlined,
+                        color: Colors.black,
+                        size: 32,
+                      ),
+                      highlightElevation: 0,
+                      backgroundColor: Colors.transparent,
+                      splashColor: Colors.black,
+                      elevation: 0,
+                    ),
+                  ],
                 ),
-                highlightElevation: 0,
-                backgroundColor: Colors.transparent,
-                splashColor: Colors.black,
-                elevation: 0,
               ),
               floatingActionButtonLocation:
-                  FloatingActionButtonLocation.miniEndTop,
+                  FloatingActionButtonLocation.miniCenterTop,
               backgroundColor: Colors.transparent,
               body: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -110,5 +140,67 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
         ));
+  }
+}
+
+class Me extends StatelessWidget {
+  const Me({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: 10,
+          sigmaY: 10,
+        ),
+        child: Container(
+          height: 150,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(32),
+            color: Colors.black.withOpacity(0.2),
+          ),
+          child: Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(child: Container()),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(50, 6, 0, 0),
+                    child: Text('Shuffle',
+                        style: TextStyle(
+                            color: Colors.white.withOpacity(0.3),
+                            fontSize: 26)),
+                  ),
+                  Expanded(
+                    child: Container(),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 12.0, 12.0, 0),
+                    child: IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(
+                          Icons.close_outlined,
+                          size: 32,
+                        )),
+                  )
+                ],
+              ),
+              Text("by",
+                  style: TextStyle(
+                      color: Colors.white.withOpacity(0.3), fontSize: 26)),
+              SizedBox(height: 10),
+              Text("Stephen",
+                  style: TextStyle(
+                      color: Colors.white.withOpacity(0.3), fontSize: 26))
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
