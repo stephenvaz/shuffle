@@ -28,6 +28,16 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future<void> _openModal(context) async {
+    await showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      context: context,
+      builder: (context) =>
+          const FractionallySizedBox(heightFactor: 0.945, child: SearchSheet()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -43,24 +53,38 @@ class _MyAppState extends State<MyApp> {
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           home: SafeArea(
-            child: Scaffold(
-              floatingActionButton: Padding(
-                padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Builder(builder: (context) {
-                      return FloatingActionButton(
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return Me();
-                              });
-                          // Me();
-                        },
+            child: Builder(builder: (context) {
+              return Scaffold(
+                floatingActionButton: Padding(
+                  padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Builder(builder: (context) {
+                        return FloatingActionButton(
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return const Me();
+                                });
+                            // Me();
+                          },
+                          child: const Icon(
+                            Icons.rocket_launch_outlined,
+                            color: Colors.black,
+                            size: 32,
+                          ),
+                          highlightElevation: 0,
+                          backgroundColor: Colors.transparent,
+                          splashColor: Colors.black,
+                          elevation: 0,
+                        );
+                      }),
+                      FloatingActionButton(
+                        onPressed: () {},
                         child: const Icon(
-                          Icons.rocket_launch_outlined,
+                          Icons.settings_outlined,
                           color: Colors.black,
                           size: 32,
                         ),
@@ -68,76 +92,84 @@ class _MyAppState extends State<MyApp> {
                         backgroundColor: Colors.transparent,
                         splashColor: Colors.black,
                         elevation: 0,
-                      );
-                    }),
-                    FloatingActionButton(
-                      onPressed: () {},
-                      child: const Icon(
-                        Icons.settings_outlined,
-                        color: Colors.black,
-                        size: 32,
                       ),
-                      highlightElevation: 0,
-                      backgroundColor: Colors.transparent,
-                      splashColor: Colors.black,
-                      elevation: 0,
+                    ],
+                  ),
+                ),
+                floatingActionButtonLocation:
+                    FloatingActionButtonLocation.miniCenterTop,
+                backgroundColor: Colors.transparent,
+                body: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: IconButton(
+                          iconSize: 64,
+                          icon: toggle
+                              ? const Icon(Icons.shuffle_on_outlined)
+                              : const Icon(
+                                  Icons.shuffle_outlined,
+                                ),
+                          onPressed: () async {
+                            if (sendIndex == null) {
+                              final snackBar = SnackBar(
+                                  // margin: EdgeInsets.symmetric(
+                                  //     vertical: 10, horizontal: 10),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  backgroundColor:
+                                      Colors.black.withOpacity(0.5),
+                                  content: const Text(
+                                    "Please select a show",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  action: SnackBarAction(
+                                      label: "Select",
+                                      onPressed: () {
+                                        _openModal(context);
+                                      }));
+
+                              // Find the ScaffoldMessenger in the widget tree
+                              // and use it to show a SnackBar.
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                              return;
+                            }
+                            setState(() {
+                              // Here we changing the icon.
+
+                              toggle = !toggle;
+                              _launchUrl();
+                            });
+                            await Future.delayed(const Duration(seconds: 2));
+                            setState(() {
+                              toggle = !toggle;
+                            });
+                          }),
                     ),
+                    Builder(builder: (context) {
+                      return TextButton(
+                        // style: TextButton.styleFrom(
+                        //     splashFactory: NoSplash.splashFactory),
+                        child: Text(
+                          "Shuffle",
+                          style: TextStyle(
+                            
+                            fontSize: 64,
+                            color: Colors.black.withOpacity(0.3),
+                          ),
+                        ),
+                        onPressed: () {
+                          _openModal(context);
+                        },
+                      );
+                    })
                   ],
                 ),
-              ),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.miniCenterTop,
-              backgroundColor: Colors.transparent,
-              body: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Center(
-                    child: IconButton(
-                        iconSize: 64,
-                        icon: toggle
-                            ? const Icon(Icons.shuffle_on_outlined)
-                            : const Icon(
-                                Icons.shuffle_outlined,
-                              ),
-                        onPressed: () async {
-                          setState(() {
-                            // Here we changing the icon.
-                            toggle = !toggle;
-                            _launchUrl();
-                          });
-                          await Future.delayed(const Duration(seconds: 2));
-                          setState(() {
-                            toggle = !toggle;
-                          });
-                        }),
-                  ),
-                  Builder(builder: (context) {
-                    return TextButton(
-                      // style: TextButton.styleFrom(
-                      //     splashFactory: NoSplash.splashFactory),
-                      child: Text(
-                        "Shuffle",
-                        style: TextStyle(
-                          fontSize: 64,
-                          color: Colors.black.withOpacity(0.3),
-                        ),
-                      ),
-                      onPressed: () async {
-                        await showModalBottomSheet(
-                          backgroundColor: Colors.transparent,
-                          isScrollControlled: true,
-                          context: context,
-                          builder: (context) => const FractionallySizedBox(
-                              heightFactor: 0.945, child: SearchSheet()),
-                        );
-                        setState(() {});
-                      },
-                    );
-                  })
-                ],
-              ),
-            ),
+              );
+            }),
           ),
         ));
   }
@@ -183,7 +215,7 @@ class Me extends StatelessWidget {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.close_outlined,
                           size: 32,
                         )),
@@ -193,7 +225,7 @@ class Me extends StatelessWidget {
               Text("by",
                   style: TextStyle(
                       color: Colors.white.withOpacity(0.3), fontSize: 26)),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text("Stephen",
                   style: TextStyle(
                       color: Colors.white.withOpacity(0.3), fontSize: 26))

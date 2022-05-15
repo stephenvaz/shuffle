@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shuffle/mediaEngine/data.dart';
 
-var sendIndex;
+dynamic sendIndex;
 
 class SearchSheet extends StatefulWidget {
   const SearchSheet({Key? key}) : super(key: key);
@@ -79,6 +79,7 @@ class _SearchSheetState extends State<SearchSheet> {
             ),
             Expanded(
               child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
                 itemCount: index,
                 scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) {
