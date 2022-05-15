@@ -21,8 +21,8 @@ class _MyAppState extends State<MyApp> {
   //temp
 
   void _launchUrl() async {
-    var showUrl = hotstar["url"][sendIndex];
-    final Uri _url = Uri.parse(randoMize(showUrl, sendIndex));
+    var showUrl = hotstar["url"][sendIndex.value];
+    final Uri _url = Uri.parse(randoMize(showUrl, sendIndex.value));
     if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
       throw 'Could not launch $_url';
     }
@@ -99,73 +99,94 @@ class _MyAppState extends State<MyApp> {
                 floatingActionButtonLocation:
                     FloatingActionButtonLocation.miniCenterTop,
                 backgroundColor: Colors.transparent,
-                body: Row(
+                body: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Center(
-                      child: IconButton(
-                          iconSize: 64,
-                          icon: toggle
-                              ? const Icon(Icons.shuffle_on_outlined)
-                              : const Icon(
-                                  Icons.shuffle_outlined,
-                                ),
-                          onPressed: () async {
-                            if (sendIndex == null) {
-                              final snackBar = SnackBar(
-                                  // margin: EdgeInsets.symmetric(
-                                  //     vertical: 10, horizontal: 10),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        IconButton(
+                            iconSize: 64,
+                            icon: toggle
+                                ? const Icon(Icons.shuffle_on_outlined)
+                                : const Icon(
+                                    Icons.shuffle_outlined,
                                   ),
-                                  backgroundColor:
-                                      Colors.black.withOpacity(0.5),
-                                  content: const Text(
-                                    "Please select a show",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  action: SnackBarAction(
-                                      label: "Select",
-                                      onPressed: () {
-                                        _openModal(context);
-                                      }));
-
-                              // Find the ScaffoldMessenger in the widget tree
-                              // and use it to show a SnackBar.
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-                              return;
-                            }
-                            setState(() {
-                              // Here we changing the icon.
-
-                              toggle = !toggle;
-                              _launchUrl();
-                            });
-                            await Future.delayed(const Duration(seconds: 2));
-                            setState(() {
-                              toggle = !toggle;
-                            });
-                          }),
-                    ),
-                    Builder(builder: (context) {
-                      return TextButton(
-                        // style: TextButton.styleFrom(
-                        //     splashFactory: NoSplash.splashFactory),
-                        child: Text(
-                          "Shuffle",
-                          style: TextStyle(
-                            
-                            fontSize: 64,
-                            color: Colors.black.withOpacity(0.3),
-                          ),
+                            onPressed: () async {
+                              if (sendIndex.value == -1) {
+                                final snackBar = SnackBar(
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    backgroundColor:
+                                        Colors.black.withOpacity(0.5),
+                                    content: const Text(
+                                      "Please select a show",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    action: SnackBarAction(
+                                        label: "Select",
+                                        onPressed: () {
+                                          _openModal(context);
+                                        }));
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                                return;
+                              }
+                              setState(() {
+                                toggle = !toggle;
+                                _launchUrl();
+                              });
+                              await Future.delayed(const Duration(seconds: 2));
+                              setState(() {
+                                toggle = !toggle;
+                              });
+                            }),
+                        Center(
+                          child: Transform.rotate(
+                              angle: 3.14 / 2,
+                              child: const Icon(
+                                Icons.horizontal_rule_rounded,
+                                size: 64,
+                              )),
                         ),
-                        onPressed: () {
-                          _openModal(context);
-                        },
-                      );
-                    })
+                        ValueListenableBuilder<int>(
+                          builder: (BuildContext context, int sendIndex,
+                              Widget? child) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(18),
+                                color: (sendIndex == -1)
+                                    ? Colors.transparent
+                                    : Colors.black.withOpacity(0.2),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: InkWell(
+                                  // style: TextButton.styleFrom(
+                                  //     splashFactory: NoSplash.splashFactory),
+                                  borderRadius: BorderRadius.circular(18),
+                                  child: Center(
+                                    child: Text(
+                                      "Shuffle",
+                                      style: TextStyle(
+                                          fontSize: 58,
+                                          color: Colors.black.withOpacity(0.2)),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    _openModal(context);
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                          valueListenable: sendIndex,
+                        )
+                      ],
+                    ),
                   ],
                 ),
               );
@@ -203,7 +224,7 @@ class Me extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(50, 6, 0, 0),
                     child: Text('Shuffle',
                         style: TextStyle(
-                            color: Colors.white.withOpacity(0.3),
+                            color: Colors.black.withOpacity(0.8),
                             fontSize: 26)),
                   ),
                   Expanded(
@@ -224,11 +245,11 @@ class Me extends StatelessWidget {
               ),
               Text("by",
                   style: TextStyle(
-                      color: Colors.white.withOpacity(0.3), fontSize: 26)),
+                      color: Colors.black.withOpacity(0.6), fontSize: 26)),
               const SizedBox(height: 10),
               Text("Stephen",
                   style: TextStyle(
-                      color: Colors.white.withOpacity(0.3), fontSize: 26))
+                      color: Colors.black.withOpacity(0.4), fontSize: 26))
             ],
           ),
         ),
