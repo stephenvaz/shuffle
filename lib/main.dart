@@ -4,6 +4,10 @@ import 'package:shuffle/mediaEngine/data.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
+import 'package:shuffle/Screens/settings.dart';
+import 'dart:math';
+
+//bool for background(gif/nothing)
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +15,6 @@ void main() {
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
-
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -43,156 +46,178 @@ class _MyAppState extends State<MyApp> {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
     );
-    return Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("lib/assets/bg_grad.gif"),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          home: SafeArea(
-            child: Builder(builder: (context) {
-              return Scaffold(
-                floatingActionButton: Padding(
-                  padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Builder(builder: (context) {
-                        return FloatingActionButton(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return const Me();
-                                });
-                            // Me();
-                          },
-                          child: const Icon(
-                            Icons.rocket_launch_outlined,
-                            color: Colors.black,
-                            size: 32,
-                          ),
-                          highlightElevation: 0,
-                          backgroundColor: Colors.transparent,
-                          splashColor: Colors.black,
-                          elevation: 0,
-                        );
-                      }),
-                      FloatingActionButton(
-                        onPressed: () {},
-                        child: const Icon(
-                          Icons.settings_outlined,
-                          color: Colors.black,
-                          size: 32,
-                        ),
-                        highlightElevation: 0,
-                        backgroundColor: Colors.transparent,
-                        splashColor: Colors.black,
-                        elevation: 0,
-                      ),
-                    ],
-                  ),
-                ),
-                floatingActionButtonLocation:
-                    FloatingActionButtonLocation.miniCenterTop,
-                backgroundColor: Colors.transparent,
-                body: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        IconButton(
-                            iconSize: 64,
-                            icon: toggle
-                                ? const Icon(Icons.shuffle_on_outlined)
-                                : const Icon(
-                                    Icons.shuffle_outlined,
-                                  ),
-                            onPressed: () async {
-                              if (sendIndex.value == -1) {
-                                final snackBar = SnackBar(
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    backgroundColor:
-                                        Colors.black.withOpacity(0.5),
-                                    content: const Text(
-                                      "Please select a show",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    action: SnackBarAction(
-                                        label: "Select",
-                                        onPressed: () {
-                                          _openModal(context);
-                                        }));
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
-                                return;
-                              }
-                              setState(() {
-                                toggle = !toggle;
-                                _launchUrl();
-                              });
-                              await Future.delayed(const Duration(seconds: 2));
-                              setState(() {
-                                toggle = !toggle;
-                              });
-                            }),
-                        Center(
-                          child: Transform.rotate(
-                              angle: 3.14 / 2,
+    return ValueListenableBuilder<bool>(
+        valueListenable: bG,
+        builder: (BuildContext context, bool bG, Widget? child) {
+          return Container(
+            decoration: BoxDecoration(
+                image: (bG == true)
+                    ? const DecorationImage(
+                        image: AssetImage("lib/assets/bg_grad.gif"),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+                gradient: (bG == false)
+                    ? const LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        transform: GradientRotation(pi / 4),
+                        colors: [Colors.tealAccent, Colors.blue])
+                    : null),
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: SafeArea(
+                child: Builder(builder: (context) {
+                  return Scaffold(
+                    floatingActionButton: Padding(
+                      padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Builder(builder: (context) {
+                            return FloatingActionButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return const Me();
+                                    });
+                                // Me();
+                              },
                               child: const Icon(
-                                Icons.horizontal_rule_rounded,
-                                size: 64,
-                              )),
-                        ),
-                        ValueListenableBuilder<int>(
-                          builder: (BuildContext context, int sendIndex,
-                              Widget? child) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(18),
-                                color: (sendIndex == -1)
-                                    ? Colors.transparent
-                                    : Colors.black.withOpacity(0.2),
+                                Icons.rocket_launch_outlined,
+                                color: Colors.black,
+                                size: 32,
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: InkWell(
-                                  // style: TextButton.styleFrom(
-                                  //     splashFactory: NoSplash.splashFactory),
-                                  borderRadius: BorderRadius.circular(18),
-                                  child: Center(
-                                    child: Text(
-                                      "Shuffle",
-                                      style: TextStyle(
-                                          fontSize: 58,
-                                          color: Colors.black.withOpacity(0.2)),
+                              highlightElevation: 0,
+                              backgroundColor: Colors.transparent,
+                              splashColor: Colors.black,
+                              elevation: 0,
+                            );
+                          }),
+                          FloatingActionButton(
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return const Settings();
+                                  });
+                            },
+                            child: const Icon(
+                              Icons.settings_outlined,
+                              color: Colors.black,
+                              size: 32,
+                            ),
+                            highlightElevation: 0,
+                            backgroundColor: Colors.transparent,
+                            splashColor: Colors.black,
+                            elevation: 0,
+                          ),
+                        ],
+                      ),
+                    ),
+                    floatingActionButtonLocation:
+                        FloatingActionButtonLocation.miniCenterTop,
+                    backgroundColor: Colors.transparent,
+                    body: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            IconButton(
+                                iconSize: 64,
+                                icon: toggle
+                                    ? const Icon(Icons.shuffle_on_outlined)
+                                    : const Icon(
+                                        Icons.shuffle_outlined,
+                                      ),
+                                onPressed: () async {
+                                  if (sendIndex.value == -1) {
+                                    final snackBar = SnackBar(
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        backgroundColor:
+                                            Colors.black.withOpacity(0.5),
+                                        content: const Text(
+                                          "Please select a show",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        action: SnackBarAction(
+                                            label: "Select",
+                                            onPressed: () {
+                                              _openModal(context);
+                                            }));
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                    return;
+                                  }
+                                  setState(() {
+                                    toggle = !toggle;
+                                    _launchUrl();
+                                  });
+                                  await Future.delayed(
+                                      const Duration(seconds: 2));
+                                  setState(() {
+                                    toggle = !toggle;
+                                  });
+                                }),
+                            Center(
+                              child: Transform.rotate(
+                                  angle: 3.14 / 2,
+                                  child: const Icon(
+                                    Icons.horizontal_rule_rounded,
+                                    size: 64,
+                                  )),
+                            ),
+                            ValueListenableBuilder<int>(
+                              builder: (BuildContext context, int sendIndex,
+                                  Widget? child) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(18),
+                                    color: (sendIndex == -1)
+                                        ? Colors.transparent
+                                        : Colors.black.withOpacity(0.2),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: InkWell(
+                                      // style: TextButton.styleFrom(
+                                      //     splashFactory: NoSplash.splashFactory),
+                                      borderRadius: BorderRadius.circular(18),
+                                      child: Center(
+                                        child: Text(
+                                          "Shuffle",
+                                          style: TextStyle(
+                                              fontSize: 58,
+                                              color: Colors.black
+                                                  .withOpacity(0.2)),
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        _openModal(context);
+                                      },
                                     ),
                                   ),
-                                  onTap: () {
-                                    _openModal(context);
-                                  },
-                                ),
-                              ),
-                            );
-                          },
-                          valueListenable: sendIndex,
-                        )
+                                );
+                              },
+                              valueListenable: sendIndex,
+                            )
+                          ],
+                        ),
                       ],
                     ),
-                  ],
-                ),
-              );
-            }),
-          ),
-        ));
+                  );
+                }),
+              ),
+            ),
+          );
+        });
   }
 }
 

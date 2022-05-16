@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:shuffle/mediaEngine/data.dart';
 
@@ -129,24 +128,26 @@ class _SearchSheetState extends State<SearchSheet> {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
                                   child: Image(
-                                      height: 100,
-                                      width: 70,
-                                      fit: BoxFit.fill,
-                                      image: NetworkImage(
-                                          hotstar["image"][index])),
+                                    height: 100,
+                                    width: 70,
+                                    fit: BoxFit.fill,
+                                    image:
+                                        NetworkImage(hotstar["image"][index]),
+                                  ),
                                 ),
-                                const SizedBox(
-                                  width: 18,
-                                ),
+
                                 //hotstar["url"][index]
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(16, 0, 0, 0),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.45,
+                                    child: Text(
                                       hotstar["name"][index],
                                       style: const TextStyle(fontSize: 20),
                                     ),
-                                  ],
+                                  ),
                                 ),
                                 Expanded(
                                   child: Container(),
