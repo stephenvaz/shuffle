@@ -17,7 +17,7 @@ options.add_argument("--disable-blink-features=AutomationControlled")
 # #mac
  
 d = webdriver.Chrome(options=options)
-
+djshfasfkhaskf
 
 def test1():
     l = []

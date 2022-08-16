@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shuffle/Screens/search.dart';
 import 'package:shuffle/mediaEngine/data.dart';
+import 'package:shuffle/mediaEngine/db.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
@@ -21,6 +22,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool toggle = false;
+  bool dataRetrieved = false;
   //temp
 
   void _launchUrl() async {
@@ -199,8 +201,12 @@ class _MyAppState extends State<MyApp> {
                                                   .withOpacity(0.2)),
                                         ),
                                       ),
+
                                       onTap: () {
                                         _openModal(context);
+                                        (dataRetrieved == false)
+                                            ? rData()
+                                            : null;
                                       },
                                     ),
                                   ),

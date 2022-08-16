@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shuffle/mediaEngine/data.dart';
+import 'package:shuffle/mediaEngine/db.dart';
 
 var sendIndex = ValueNotifier(-1);
 
@@ -160,8 +161,9 @@ class _SearchSheetState extends State<SearchSheet> {
                                           !hotstar["fav"][index];
                                     });
                                   },
-                                  color:
-                                      hotstar["fav"][index] ? Colors.red : null,
+                                  color: hotstar["fav"][index]
+                                      ? Colors.red
+                                      : null,
                                   icon: hotstar["fav"][index]
                                       ? const Icon(Icons.favorite)
                                       : const Icon(
