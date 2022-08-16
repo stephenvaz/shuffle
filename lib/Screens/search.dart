@@ -13,7 +13,7 @@ class SearchSheet extends StatefulWidget {
 }
 
 class _SearchSheetState extends State<SearchSheet> {
-  var index = hotstar["name"].length;
+  var index = Data.dbdt?["url"].length;
 
   @override
   Widget build(BuildContext context) {
@@ -133,11 +133,11 @@ class _SearchSheetState extends State<SearchSheet> {
                                     width: 70,
                                     fit: BoxFit.fill,
                                     image:
-                                        NetworkImage(hotstar["image"][index]),
+                                        NetworkImage(Data.dbdt?["image"][index] ),
                                   ),
                                 ),
 
-                                //hotstar["url"][index]
+                                //Data.dbdt?["url"][index]
                                 Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(16, 0, 0, 0),
@@ -145,7 +145,7 @@ class _SearchSheetState extends State<SearchSheet> {
                                     width: MediaQuery.of(context).size.width *
                                         0.45,
                                     child: Text(
-                                      hotstar["name"][index],
+                                      Data.dbdt?["name"][index] ?? "",
                                       style: const TextStyle(fontSize: 20),
                                     ),
                                   ),
@@ -155,16 +155,15 @@ class _SearchSheetState extends State<SearchSheet> {
                                 ),
                                 IconButton(
                                   onPressed: () {
-                                    // print(hotstar["name"].length);
+                                    // print(Data.dbdt?["name"].length);
                                     setState(() {
-                                      hotstar["fav"][index] =
-                                          !hotstar["fav"][index];
+                                      Data.dbdt?["fav"][index] =
+                                          !Data.dbdt?["fav"][index];
                                     });
                                   },
-                                  color: hotstar["fav"][index]
-                                      ? Colors.red
-                                      : null,
-                                  icon: hotstar["fav"][index]
+                                  color:
+                                      Data.dbdt?["fav"][index] ?? false ? Colors.red : Colors.transparent ,
+                                  icon: Data.dbdt?["fav"][index] ?? false
                                       ? const Icon(Icons.favorite)
                                       : const Icon(
                                           Icons.favorite_border,

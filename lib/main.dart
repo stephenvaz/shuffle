@@ -11,6 +11,7 @@ import 'dart:math';
 //bool for background(gif/nothing)
 
 void main() {
+  rData();
   runApp(const MyApp());
 }
 
@@ -26,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   //temp
 
   void _launchUrl() async {
-    var showUrl = hotstar["url"][sendIndex.value];
+    var showUrl = Data.dbdt?["url"][sendIndex.value];
     final Uri _url = Uri.parse(randoMize(showUrl, sendIndex.value));
     if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
       throw 'Could not launch $_url';
@@ -202,11 +203,8 @@ class _MyAppState extends State<MyApp> {
                                         ),
                                       ),
 
-                                      onTap: () {
+                                      onTap: ()  {
                                         _openModal(context);
-                                        (dataRetrieved == false)
-                                            ? rData()
-                                            : null;
                                       },
                                     ),
                                   ),
