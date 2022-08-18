@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:shuffle/mediaEngine/data.dart';
 import 'package:shuffle/mediaEngine/db.dart';
 
 var sendIndex = ValueNotifier(-1);
@@ -132,16 +131,14 @@ class _SearchSheetState extends State<SearchSheet> {
                                     height: 100,
                                     width: 70,
                                     fit: BoxFit.fill,
-                                    image:
-                                        NetworkImage(Data.dbdt?["image"][index] ),
+                                    image: NetworkImage(
+                                        Data.dbdt?["image"][index]),
                                   ),
                                 ),
-
-                                //Data.dbdt?["url"][index]
                                 Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(16, 0, 0, 0),
-                                  child: Container(
+                                  child: SizedBox(
                                     width: MediaQuery.of(context).size.width *
                                         0.45,
                                     child: Text(
@@ -161,13 +158,14 @@ class _SearchSheetState extends State<SearchSheet> {
                                           !Data.dbdt?["fav"][index];
                                     });
                                   },
-                                  color:
-                                      Data.dbdt?["fav"][index] ?? false ? Colors.red : Colors.transparent ,
-                                  icon: Data.dbdt?["fav"][index] ?? false
+                                  color: Data.dbdt?["fav"][index] ?? false
+                                      ? Colors.red
+                                      : null,
+                                  icon: (Data.dbdt?["fav"][index] == true
                                       ? const Icon(Icons.favorite)
                                       : const Icon(
                                           Icons.favorite_border,
-                                        ),
+                                        )),
                                 ),
                               ],
                             ),

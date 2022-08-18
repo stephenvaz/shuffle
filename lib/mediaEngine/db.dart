@@ -1,20 +1,25 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+bool isOnline = false;
 
 class Data {
   static Map? dbdt;
 }
 
-Future<int> rData() async {
+Future<void> rData() async {
   String link =
       "https://stephenvaz.github.io/stephenvaz.shuffle_data.github.io/data.json";
-  var res = await http.get(Uri.parse(link));
-  var dt = Data();
-  Map dbdt = json.decode(res.body);
-  Data.dbdt = dbdt;
-  print(dbdt["name"]);
-  return 0;
-  // return dbdt;
-//     dt.name = data["name"] as List;
-//     print(dt.name);
+  http.Response res ;
+  try {
+    res = await http.get(Uri.parse(link));
+  } on SocketException catch (_) {
+    isOnline = false;
+    return;
+  }
+  Data.dbdt = json.decode(res.body);
+  isOnline = true;
+  return;
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:shuffle/mediaEngine/db.dart';
 
 var bG = ValueNotifier(true);
 
@@ -12,23 +11,29 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  var heart = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
-      child: ClipRRect(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(32),
+          side: const BorderSide(color: Colors.black)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: BackdropFilter(
           filter: ImageFilter.blur(
             sigmaX: 10,
             sigmaY: 10,
           ),
           child: Container(
-            height: 450,
+            // height: 450,
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.2),
               borderRadius: BorderRadius.circular(32),
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
                   children: [
@@ -77,22 +82,43 @@ class _SettingsState extends State<Settings> {
                     ],
                   ),
                 ),
-                IconButton(
-                    onPressed: () {
-                      rData();
-                    },
-                    icon: Icon(Icons.telegram)),
-                IconButton(
-                    onPressed: () {
-                      rData();
-                      print(Data.dbdt?["url"]);
-                    },
-                    icon: Icon(Icons.telegram_outlined)),
-                Expanded(
-                  child: Container(
-                    child: Center(child: Text("In Development...")),
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text("Made with",
+                        style: TextStyle(
+                            color: Colors.black.withOpacity(0.8),
+                            fontSize: 18)),
+                    ValueListenableBuilder(
+                        valueListenable: heart,
+                        builder: (context, value, child) {
+                          return IconButton(
+                              onPressed: () {
+                                heart.value = !heart.value;
+                              },
+                              icon: Icon(
+                                  (heart.value
+                                      ? Icons.favorite
+                                      : Icons.favorite_border_rounded),
+                                  color: Colors.red,
+                                  size: 20));
+                        }),
+                    Text("by Stephen",
+                        style: TextStyle(
+                            color: Colors.black.withOpacity(0.8),
+                            fontSize: 18)),
+                  ],
                 ),
+
+                const Padding(
+                  padding: EdgeInsets.all(8),
+                ),
+                // Expanded(
+                //   child: Container(
+                //     child: Center(child: Text("In Development...")),
+                //   ),
+                // ),
               ],
             ),
           ),
