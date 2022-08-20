@@ -348,6 +348,7 @@ class OfflineHome extends StatefulWidget {
 }
 
 class _OfflineHomeState extends State<OfflineHome> {
+  var isLoading = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -371,28 +372,53 @@ class _OfflineHomeState extends State<OfflineHome> {
                   InkWell(
                     borderRadius: BorderRadius.circular(32),
                     onTap: () async {
+                      isLoading.value = true;
                       await rData();
+                      await Future.delayed(const Duration(seconds: 1));
                       if (isOnline) {
+                        isLoading.value = false;
                         // Navigator.pop(context);
-                        Navigator.push(
+                        Navigator.pushAndRemoveUntil(
                             context,
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      const OnlineHome(),
-                              transitionsBuilder: (context, animation,
-                                      secondaryAnimation, child) =>
-                                  FadeTransition(
-                                      opacity: animation, child: child),
-                              transitionDuration:
-                                  const Duration(milliseconds: 350),
-                            ));
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    const OnlineHome()),
+                            ModalRoute.withName('/root'));
+                        // Navigator.pushReplacement(
+                        //     context,
+                        //     PageRouteBuilder(
+                        //       pageBuilder:
+                        //           (context, animation, secondaryAnimation) =>
+                        //               const OnlineHome(),
+                        //       transitionsBuilder: (context, animation,
+                        //               secondaryAnimation, child) =>
+                        //           FadeTransition(
+                        //               opacity: animation, child: child),
+                        //       transitionDuration:
+                        //           const Duration(milliseconds: 350),
+                        //     ));
                       }
+                      isLoading.value = false;
                     },
-                    child: const Icon(
-                      Icons.replay_outlined,
-                      size: 48,
-                    ),
+                    // child: const Icon(
+                    //   Icons.replay_outlined,
+                    //   size: 48,
+                    // ),
+                    child: ValueListenableBuilder<bool>(
+                        valueListenable: isLoading,
+                        builder: (BuildContext context, bool isLoading,
+                            Widget? child) {
+                          return (isLoading)
+                              ? Visibility(
+                                  visible: isLoading,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.black.withOpacity(0.4),
+                                  ))
+                              : const Icon(
+                                  Icons.replay_outlined,
+                                  size: 48,
+                                );
+                        }),
                   ),
                 ],
               ),
