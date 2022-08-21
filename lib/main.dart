@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shuffle/Screens/search.dart';
-import 'package:shuffle/mediaEngine/data.dart';
 import 'package:shuffle/mediaEngine/db.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
@@ -8,11 +7,9 @@ import 'dart:ui';
 import 'package:shuffle/Screens/settings.dart';
 import 'dart:math';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
-//bool for background(gif/nothing)
 
 void main() async {
   await rData();
-  // (isOnline == true ? const MyApp() : const MyAppOffline());
   runApp(const MyApp());
 }
 
@@ -23,8 +20,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // bool dataRetrieved = false;
-  //temp
 
   @override
   Widget build(BuildContext context) {
@@ -184,6 +179,14 @@ class _OnlineHomeState extends State<OnlineHome> {
     );
   }
 
+  Future<void> searchInitiate() async {
+    inx = Data.dbdt?["name"].length;
+    // print(inx);
+    indexes = List.generate(inx, (inx) => inx);
+    // print(indexes);
+    return;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -191,6 +194,7 @@ class _OnlineHomeState extends State<OnlineHome> {
       home: SafeArea(
         child: Builder(builder: (context) {
           return Scaffold(
+            resizeToAvoidBottomInset: false,
             floatingActionButton: Padding(
               padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
               child: Row(
@@ -271,7 +275,8 @@ class _OnlineHomeState extends State<OnlineHome> {
                                 ),
                                 action: SnackBarAction(
                                     label: "Select",
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      await searchInitiate();
                                       _openModal(context);
                                     }));
                             ScaffoldMessenger.of(context)
@@ -320,7 +325,8 @@ class _OnlineHomeState extends State<OnlineHome> {
                                 ),
                               ),
 
-                              onTap: () {
+                              onTap: () async {
+                                await searchInitiate();
                                 _openModal(context);
                               },
                             ),
@@ -384,26 +390,9 @@ class _OfflineHomeState extends State<OfflineHome> {
                                 builder: (BuildContext context) =>
                                     const OnlineHome()),
                             ModalRoute.withName('/root'));
-                        // Navigator.pushReplacement(
-                        //     context,
-                        //     PageRouteBuilder(
-                        //       pageBuilder:
-                        //           (context, animation, secondaryAnimation) =>
-                        //               const OnlineHome(),
-                        //       transitionsBuilder: (context, animation,
-                        //               secondaryAnimation, child) =>
-                        //           FadeTransition(
-                        //               opacity: animation, child: child),
-                        //       transitionDuration:
-                        //           const Duration(milliseconds: 350),
-                        //     ));
                       }
                       isLoading.value = false;
                     },
-                    // child: const Icon(
-                    //   Icons.replay_outlined,
-                    //   size: 48,
-                    // ),
                     child: ValueListenableBuilder<bool>(
                         valueListenable: isLoading,
                         builder: (BuildContext context, bool isLoading,

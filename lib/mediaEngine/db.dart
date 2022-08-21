@@ -1,13 +1,21 @@
 import 'dart:io';
-
+import "dart:math";
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 bool isOnline = false;
 
+
+String randoMize(String url, int index) {
+  final _random = Random();
+  return url +
+      Data.dbdt?["episodes"][index]
+          [_random.nextInt(Data.dbdt?["episodes"][index].length)];
+}
 class Data {
   static Map? dbdt;
 }
+
 
 Future<void> rData() async {
   String link =

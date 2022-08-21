@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:shuffle/mediaEngine/db.dart';
 
 var sendIndex = ValueNotifier(-1);
+var indexes = [];
+var inx = 0;
 
 class SearchSheet extends StatefulWidget {
   const SearchSheet({Key? key}) : super(key: key);
@@ -12,7 +14,7 @@ class SearchSheet extends StatefulWidget {
 }
 
 class _SearchSheetState extends State<SearchSheet> {
-  var index = Data.dbdt?["url"].length;
+  // var index = Data.dbdt?["url"].length;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +54,7 @@ class _SearchSheetState extends State<SearchSheet> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
                 child: TextFormField(
+                  onChanged: searchTitle,
                   cursorColor: Colors.grey,
                   textAlign: TextAlign.start,
                   decoration: InputDecoration(
@@ -89,9 +92,9 @@ class _SearchSheetState extends State<SearchSheet> {
               Expanded(
                 child: ListView.builder(
                   physics: const BouncingScrollPhysics(),
-                  itemCount: index,
+                  itemCount: inx,
                   scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index) {
+                  itemBuilder: (context, inx) {
                     return Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Container(
@@ -99,7 +102,7 @@ class _SearchSheetState extends State<SearchSheet> {
                           borderRadius: const BorderRadius.all(
                             Radius.circular(24.0),
                           ),
-                          color: sendIndex.value == index
+                          color: sendIndex.value == indexes[inx]
                               ? Colors.greenAccent.withOpacity(0.1)
                               : Colors.transparent,
                         ),
@@ -109,13 +112,13 @@ class _SearchSheetState extends State<SearchSheet> {
                           ),
                           splashColor: Colors.white.withOpacity(0.5),
                           onTap: () {
-                            if (sendIndex.value == index) {
+                            if (sendIndex.value == indexes[inx]) {
                               setState(() {
                                 sendIndex.value = -1;
                               });
                             } else {
                               setState(() {
-                                sendIndex.value = index;
+                                sendIndex.value = indexes[inx];
                               });
 
                               Navigator.pop(context);
@@ -132,7 +135,7 @@ class _SearchSheetState extends State<SearchSheet> {
                                     width: 70,
                                     fit: BoxFit.fill,
                                     image: NetworkImage(
-                                        Data.dbdt?["image"][index]),
+                                        Data.dbdt?["image"][indexes[inx]]),
                                   ),
                                 ),
                                 Padding(
@@ -142,7 +145,7 @@ class _SearchSheetState extends State<SearchSheet> {
                                     width: MediaQuery.of(context).size.width *
                                         0.45,
                                     child: Text(
-                                      Data.dbdt?["name"][index] ?? "",
+                                      Data.dbdt?["name"][indexes[inx]] ?? "",
                                       style: const TextStyle(fontSize: 20),
                                     ),
                                   ),
@@ -154,21 +157,23 @@ class _SearchSheetState extends State<SearchSheet> {
                                   onPressed: () {
                                     // print(Data.dbdt?["name"].length);
                                     setState(() {
-                                      Data.dbdt?["fav"][index] =
-                                          !Data.dbdt?["fav"][index];
+                                      Data.dbdt?["fav"][indexes[inx]] =
+                                          !Data.dbdt?["fav"][indexes[inx]];
                                     });
                                   },
-                                  color: Data.dbdt?["fav"][index] ?? false
-                                      ? Colors.red
-                                      : null,
-                                  icon: (Data.dbdt?["fav"][index] == true
-                                      ? const Icon(Icons.favorite)
-                                      : const Icon(
-                                          Icons.favorite_border,
-                                        )),
+                                  color:
+                                      Data.dbdt?["fav"][indexes[inx]] ?? false
+                                          ? Colors.red
+                                          : null,
+                                  icon:
+                                      (Data.dbdt?["fav"][indexes[inx]] == true
+                                          ? const Icon(Icons.favorite)
+                                          : const Icon(
+                                              Icons.favorite_border,
+                                            )),
                                 ),
                               ],
-                            ),
+                            ), //CustomListTile
                           ),
                         ),
                       ),
@@ -181,5 +186,22 @@ class _SearchSheetState extends State<SearchSheet> {
         ),
       ),
     );
+  }
+
+  void searchTitle(String title) {
+    var temp = [];
+    final suggestions = Data.dbdt?["name"].where((element) {
+      final titleDB = element.toLowerCase();
+      final input = title.toLowerCase();
+      return titleDB.contains(input) ? true : false;
+    }).toList();
+    suggestions.forEach((element) {
+      temp.add(Data.dbdt?["name"].indexOf(element));
+    });
+    // print(indexes);
+    setState(() {
+      indexes = temp;
+      inx = indexes.length;
+    });
   }
 }
