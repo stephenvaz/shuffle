@@ -1,8 +1,0 @@
-'minimum-viable-product/1770000175', 
-'the-cap-table/1770000176', 
-'articles-of-incorporation/1770000177', 
-'fiduciary-duties/1770000178', 
-'signaling-risk/1770000179', 
-'third-party-insourcing/1770000908', 
-'proof-of-concept/1770000180', 
-'optimal-tiptotip-efficiency/1770000181', 

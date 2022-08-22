@@ -3,10 +3,9 @@ import 'package:shuffle/Screens/search.dart';
 import 'package:shuffle/mediaEngine/db.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
-import 'dart:ui';
 import 'package:shuffle/Screens/settings.dart';
 import 'dart:math';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:shuffle/Screens/suggest.dart';
 
 void main() async {
   await rData();
@@ -20,7 +19,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -44,110 +42,9 @@ class _MyAppState extends State<MyApp> {
                         transform: GradientRotation(pi / 4),
                         colors: [Colors.tealAccent, Colors.blue])
                     : null),
-            // child: const OfflineHome(),
             child: (isOnline ? const OnlineHome() : const OfflineHome()),
           );
         });
-  }
-}
-
-class Suggest extends StatefulWidget {
-  const Suggest({Key? key}) : super(key: key);
-
-  @override
-  State<Suggest> createState() => _SuggestState();
-}
-
-class _SuggestState extends State<Suggest> {
-  TextEditingController showName = TextEditingController();
-  TextEditingController showOTT = TextEditingController();
-  TextEditingController showLink = TextEditingController();
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(32),
-          side: const BorderSide(color: Colors.black)),
-      backgroundColor: Colors.transparent,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: 10,
-            sigmaY: 10,
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(32),
-              color: Colors.black.withOpacity(0.2),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "Suggestions",
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black.withOpacity(0.4)),
-                  ),
-                  TextFormField(
-                    controller: showName,
-                    decoration: InputDecoration(
-                      labelText: "Name of show",
-                      labelStyle: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black.withOpacity(0.4)),
-                    ),
-                  ),
-                  TextFormField(
-                    controller: showOTT,
-                    decoration: InputDecoration(
-                      labelText: "OTT Platform",
-                      labelStyle: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black.withOpacity(0.4)),
-                    ),
-                  ),
-                  TextFormField(
-                    controller: showLink,
-                    decoration: InputDecoration(
-                      labelText: "URL",
-                      labelStyle: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black.withOpacity(0.4)),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      final Email email = Email(
-                        body:
-                            'Name of show: ${showName.text} \n OTT Platform: ${showOTT.text} \n URL: ${showLink.text}',
-                        subject: 'Show request',
-                        recipients: ['vs1102@proton.me'],
-                        isHTML: false,
-                      );
-
-                      await FlutterEmailSender.send(email);
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      "Submit",
-                      style: TextStyle(color: Colors.black.withOpacity(0.4)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }
 
@@ -181,9 +78,7 @@ class _OnlineHomeState extends State<OnlineHome> {
 
   Future<void> searchInitiate() async {
     inx = Data.dbdt?["name"].length;
-    // print(inx);
     indexes = List.generate(inx, (inx) => inx);
-    // print(indexes);
     return;
   }
 
@@ -204,12 +99,22 @@ class _OnlineHomeState extends State<OnlineHome> {
                     return FloatingActionButton(
                       heroTag: null,
                       onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return const Suggest();
-                            });
-                        // Me();
+                        showGeneralDialog(
+                          barrierColor: Colors.black.withOpacity(0.5),
+                          transitionBuilder: (context, a1, a2, widget) {
+                            return Transform.scale(
+                              scale: a1.value,
+                              child: const Suggest(),
+                            );
+                          },
+                          transitionDuration: const Duration(milliseconds: 150),
+                          barrierDismissible: true,
+                          barrierLabel: '',
+                          context: context,
+                          pageBuilder: (context, animation1, animation2) {
+                            return const Suggest();
+                          },
+                        );
                       },
                       child: const Icon(
                         Icons.rocket_launch_outlined,
@@ -225,11 +130,22 @@ class _OnlineHomeState extends State<OnlineHome> {
                   FloatingActionButton(
                     heroTag: null,
                     onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return const Settings();
-                          });
+                      showGeneralDialog(
+                        barrierColor: Colors.black.withOpacity(0.5),
+                        transitionBuilder: (context, a1, a2, widget) {
+                          return Transform.scale(
+                            scale: a1.value,
+                            child: const Settings(),
+                          );
+                        },
+                        transitionDuration: const Duration(milliseconds: 150),
+                        barrierDismissible: true,
+                        barrierLabel: '',
+                        context: context,
+                        pageBuilder: (context, animation1, animation2) {
+                          return const Settings();
+                        },
+                      );
                     },
                     child: const Icon(
                       Icons.settings_outlined,
@@ -383,12 +299,38 @@ class _OfflineHomeState extends State<OfflineHome> {
                       await Future.delayed(const Duration(seconds: 1));
                       if (isOnline) {
                         isLoading.value = false;
-                        // Navigator.pop(context);
                         Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    const OnlineHome()),
+                            // MaterialPageRoute(
+                            //   builder: (BuildContext context) =>
+                            //       const OnlineHome(),
+                            // ),
+                            PageRouteBuilder(
+                              pageBuilder: (
+                                BuildContext context,
+                                Animation<double> animation,
+                                Animation<double> secondaryAnimation,
+                              ) =>
+                                  const OnlineHome(),
+                              transitionsBuilder: (
+                                BuildContext context,
+                                Animation<double> animation,
+                                Animation<double> secondaryAnimation,
+                                Widget child,
+                              ) =>
+                                  ScaleTransition(
+                                scale: Tween<double>(
+                                  begin: 0.0,
+                                  end: 1.0,
+                                ).animate(
+                                  CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.fastOutSlowIn,
+                                  ),
+                                ),
+                                child: child,
+                              ),
+                            ),
                             ModalRoute.withName('/root'));
                       }
                       isLoading.value = false;
