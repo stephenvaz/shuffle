@@ -88,101 +88,122 @@ class _SearchSheetState extends State<SearchSheet> {
                 ),
               ),
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-                  child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: inx,
-                    scrollDirection: Axis.vertical,
-                    itemBuilder: (context, inx) {
-                      return Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(24.0),
-                            ),
-                            color: sendIndex.value == indexes[inx]
-                                ? Colors.greenAccent.withOpacity(0.1)
-                                : Colors.transparent,
+                child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: inx,
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (context, inx) {
+                    return Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(24.0),
                           ),
-                          child: InkWell(
-                            customBorder: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            splashColor: Colors.white.withOpacity(0.5),
-                            onTap: () {
-                              if (sendIndex.value == indexes[inx]) {
-                                setState(() {
-                                  sendIndex.value = -1;
-                                });
-                              } else {
-                                setState(() {
-                                  sendIndex.value = indexes[inx];
-                                });
+                          color: sendIndex.value == indexes[inx]
+                              ? Colors.greenAccent.withOpacity(0.1)
+                              : Colors.transparent,
+                        ),
+                        child: InkWell(
+                          customBorder: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          splashColor: Colors.white.withOpacity(0.5),
+                          onTap: () {
+                            if (sendIndex.value == indexes[inx]) {
+                              setState(() {
+                                sendIndex.value = -1;
+                              });
+                            } else {
+                              setState(() {
+                                sendIndex.value = indexes[inx];
+                              });
 
-                                Navigator.pop(context);
-                              }
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(18.0),
-                              child: Row(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: Image(
-                                      height: 100,
-                                      width: 70,
-                                      fit: BoxFit.fill,
-                                      image: NetworkImage(
-                                          Data.dbdt?["image"][indexes[inx]]),
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(18.0),
+                            child: Row(
+                              children: [
+                                // ClipRRect(
+                                //   borderRadius: BorderRadius.circular(8.0),
+                                //   child: Image(
+                                //     height: 100,
+                                //     width: 70,
+                                //     fit: BoxFit.fill,
+                                //     image: NetworkImage(
+                                //         Data.dbdt?["image"][indexes[inx]]),
+                                //   ),
+                                // ),
+                                _buildImage(inx),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(16, 0, 0, 0),
+                                  child: SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.45,
+                                    child: Text(
+                                      Data.dbdt?["name"][indexes[inx]] ?? "",
+                                      style: const TextStyle(fontSize: 20),
                                     ),
                                   ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(16, 0, 0, 0),
-                                    child: SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.45,
-                                      child: Text(
-                                        Data.dbdt?["name"][indexes[inx]] ?? "",
-                                        style: const TextStyle(fontSize: 20),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Container(),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      // print(Data.dbdt?["name"].length);
-                                      setState(() {
-                                        Data.dbdt?["fav"][indexes[inx]] =
-                                            !Data.dbdt?["fav"][indexes[inx]];
-                                      });
-                                    },
-                                    color:
-                                        Data.dbdt?["fav"][indexes[inx]] ?? false
-                                            ? Colors.red
-                                            : null,
-                                    icon:
-                                        (Data.dbdt?["fav"][indexes[inx]] == true
-                                            ? const Icon(Icons.favorite)
-                                            : const Icon(
-                                                Icons.favorite_border,
-                                              )),
-                                  ),
-                                ],
-                              ), //CustomListTile
-                            ),
+                                ),
+                                Expanded(
+                                  child: Container(),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    // print(Data.dbdt?["name"].length);
+                                    setState(() {
+                                      Data.dbdt?["fav"][indexes[inx]] =
+                                          !Data.dbdt?["fav"][indexes[inx]];
+                                    });
+                                  },
+                                  color:
+                                      Data.dbdt?["fav"][indexes[inx]] ?? false
+                                          ? Colors.red
+                                          : null,
+                                  icon: (Data.dbdt?["fav"][indexes[inx]] == true
+                                      ? const Icon(Icons.favorite)
+                                      : const Icon(
+                                          Icons.favorite_border,
+                                        )),
+                                ),
+                              ],
+                            ), //CustomListTile
                           ),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImage(int index) {
+    return Container(
+      height: 100,
+      width: 70,
+      color: Colors.transparent,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: Image(
+            height: 100,
+            width: 70,
+            fit: BoxFit.fill,
+            image: NetworkImage(Data.dbdt?["image"][indexes[index]]),
           ),
         ),
       ),
