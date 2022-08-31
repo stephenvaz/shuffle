@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 var bG = ValueNotifier(true);
 
 class Settings extends StatefulWidget {
@@ -12,6 +14,12 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   var heart = ValueNotifier(false);
+
+  void setData(String key, bool value) async {
+    final _prefs = await SharedPreferences.getInstance();
+    _prefs.setBool(key, value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -76,6 +84,7 @@ class _SettingsState extends State<Settings> {
                         onChanged: (value) {
                           setState(() {
                             bG.value = !bG.value;
+                            setData('background', bG.value);
                           });
                         },
                       ),

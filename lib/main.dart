@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'package:shuffle/Screens/search.dart';
 import 'package:shuffle/mediaEngine/db.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -7,9 +9,25 @@ import 'package:shuffle/Screens/settings.dart';
 import 'dart:math';
 import 'package:shuffle/Screens/suggest.dart';
 
+//test variables
+bool jsDB = true;
+//
+
 void main() async {
   await rData();
+  WidgetsFlutterBinding.ensureInitialized();
+  await getData();
   runApp(const MyApp());
+}
+
+Future<void> getData() async {
+  final prefs = await SharedPreferences.getInstance();
+  final bool? bGval = prefs.getBool('background');
+  if (bGval == null) {
+    prefs.setBool('background', true);
+  } else {
+    bG.value = bGval;
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -56,13 +74,72 @@ class OnlineHome extends StatefulWidget {
 }
 
 class _OnlineHomeState extends State<OnlineHome> {
-  bool toggle = false;
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      // home: Home(),
+      home: ShowCaseWidget(
+        builder: Builder(builder: (context) {
+          return const Home();
+        }),
+      ),
+    );
+  }
+}
 
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  //showcase
+  final k1 = GlobalKey();
+  final k2 = GlobalKey();
+  final k3 = GlobalKey();
+  final k4 = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    // WidgetsBinding.instance.addPostFrameCallback(
+    //   (_) => ShowCaseWidget.of(context).startShowCase([k1]),
+    // );
+    displayShowCase();
+  }
+
+  void displayShowCase() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    bool? showCase = prefs.getBool("showCaseVal");
+    // print(showCase);
+    if (showCase == null) {
+      // print("debug1");
+      await prefs.setBool("showCaseVal", true);
+    }
+    if (prefs.getBool("showCaseVal") == true) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        ShowCaseWidget.of(context).startShowCase([k1, k2, k3, k4]);
+      });
+      prefs.setBool("showCaseVal", false);
+    }
+    // print(prefs.getBool("showCaseVal"));
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   ShowCaseWidget.of(context).startShowCase([k1, k2, k3, k4]);
+    // });
+  }
+
+  //data
+  bool toggle = false;
   void _launchUrl() async {
     var showUrl = Data.dbdt?["url"][sendIndex.value];
     final Uri _url = Uri.parse(randoMize(showUrl, sendIndex.value));
     if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
-      throw 'Could not launch $_url';
+      // throw 'Could not launch $_url';
+      // print('Could not launch $_url');
     }
   }
 
@@ -76,19 +153,75 @@ class _OnlineHomeState extends State<OnlineHome> {
     );
   }
 
+  Future<void> _openPage(context, Widget w) async {
+    // await showModalBottomSheet(
+    //   backgroundColor: Colors.transparent,
+    //   isScrollControlled: true,
+    //   context: context,
+    //   builder: (context) =>
+    //       const FractionallySizedBox(heightFactor: 0.945, child: Settings()),
+    // );
+    await showGeneralDialog(
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionBuilder: (context, a1, a2, widget) {
+        return Transform.scale(
+          scale: a1.value,
+          child: w,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 150),
+      barrierDismissible: true,
+      barrierLabel: '',
+      context: context,
+      pageBuilder: (context, animation1, animation2) {
+        return w;
+      },
+    );
+  }
+
+  // Future<void> _openSlider(context, Widget w) async{
+
+  // }
+
   Future<void> searchInitiate() async {
-    inx = Data.dbdt?["name"].length;
-    indexes = List.generate(inx, (inx) => inx);
-    return;
+    if (jsDB) {
+      inx = Data.dbdt?["name"].length;
+      indexes = List.generate(inx, (inx) => inx);
+      jsDB = false;
+      // print("fetched");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SafeArea(
-        child: Builder(builder: (context) {
-          return Scaffold(
+    return SafeArea(
+      child: Builder(builder: (context) {
+        return GestureDetector(
+          onPanUpdate: (details) {
+            // Swiping in right direction.
+            if (details.delta.dx > 0) {
+              _openPage(context, const Suggest());
+            }
+
+            // Swiping in left direction.
+            if (details.delta.dx < 0) {
+              // Navigator.of(context)
+              //     .push(MaterialPageRoute(builder: (context) => Settings()));
+              _openPage(context, const Settings());
+            }
+          },
+          onVerticalDragUpdate: (details) async {
+            await searchInitiate();
+
+            _openModal(context);
+          },
+          // onHorizontalDragUpdate: (details) {
+          //   if (details.delta.direction > 0) {
+          //     Navigator.of(context)
+          //         .push(MaterialPageRoute(builder: (context) => Suggest()));
+          //   }
+          // },
+          child: Scaffold(
             resizeToAvoidBottomInset: false,
             floatingActionButton: Padding(
               padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
@@ -96,7 +229,51 @@ class _OnlineHomeState extends State<OnlineHome> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Builder(builder: (context) {
-                    return FloatingActionButton(
+                    return Showcase(
+                      key: k3,
+                      description: "Suggest a show",
+                      shapeBorder: const CircleBorder(),
+                      contentPadding: const EdgeInsets.all(16),
+                      //descTextStyle: TextStyle(fontSize: 18),
+                      //showcaseBackgroundColor: Colors.white.withOpacity(0.6),
+                      child: FloatingActionButton(
+                        heroTag: null,
+                        onPressed: () {
+                          showGeneralDialog(
+                            barrierColor: Colors.black.withOpacity(0.5),
+                            transitionBuilder: (context, a1, a2, widget) {
+                              return Transform.scale(
+                                scale: a1.value,
+                                child: const Suggest(),
+                              );
+                            },
+                            transitionDuration:
+                                const Duration(milliseconds: 150),
+                            barrierDismissible: true,
+                            barrierLabel: '',
+                            context: context,
+                            pageBuilder: (context, animation1, animation2) {
+                              return const Suggest();
+                            },
+                          );
+                        },
+                        child: const Icon(
+                          Icons.rocket_launch_outlined,
+                          color: Colors.black,
+                          size: 32,
+                        ),
+                        highlightElevation: 0,
+                        backgroundColor: Colors.transparent,
+                        splashColor: Colors.black,
+                        elevation: 0,
+                      ),
+                    );
+                  }),
+                  Showcase(
+                    description: "Access Settings",
+                    key: k4,
+                    shapeBorder: const CircleBorder(),
+                    child: FloatingActionButton(
                       heroTag: null,
                       onPressed: () {
                         showGeneralDialog(
@@ -104,7 +281,7 @@ class _OnlineHomeState extends State<OnlineHome> {
                           transitionBuilder: (context, a1, a2, widget) {
                             return Transform.scale(
                               scale: a1.value,
-                              child: const Suggest(),
+                              child: const Settings(),
                             );
                           },
                           transitionDuration: const Duration(milliseconds: 150),
@@ -112,12 +289,12 @@ class _OnlineHomeState extends State<OnlineHome> {
                           barrierLabel: '',
                           context: context,
                           pageBuilder: (context, animation1, animation2) {
-                            return const Suggest();
+                            return const Settings();
                           },
                         );
                       },
                       child: const Icon(
-                        Icons.rocket_launch_outlined,
+                        Icons.settings_outlined,
                         color: Colors.black,
                         size: 32,
                       ),
@@ -125,37 +302,7 @@ class _OnlineHomeState extends State<OnlineHome> {
                       backgroundColor: Colors.transparent,
                       splashColor: Colors.black,
                       elevation: 0,
-                    );
-                  }),
-                  FloatingActionButton(
-                    heroTag: null,
-                    onPressed: () {
-                      showGeneralDialog(
-                        barrierColor: Colors.black.withOpacity(0.5),
-                        transitionBuilder: (context, a1, a2, widget) {
-                          return Transform.scale(
-                            scale: a1.value,
-                            child: const Settings(),
-                          );
-                        },
-                        transitionDuration: const Duration(milliseconds: 150),
-                        barrierDismissible: true,
-                        barrierLabel: '',
-                        context: context,
-                        pageBuilder: (context, animation1, animation2) {
-                          return const Settings();
-                        },
-                      );
-                    },
-                    child: const Icon(
-                      Icons.settings_outlined,
-                      color: Colors.black,
-                      size: 32,
                     ),
-                    highlightElevation: 0,
-                    backgroundColor: Colors.transparent,
-                    splashColor: Colors.black,
-                    elevation: 0,
                   ),
                 ],
               ),
@@ -170,44 +317,51 @@ class _OnlineHomeState extends State<OnlineHome> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    IconButton(
-                        iconSize: 64,
-                        icon: toggle
-                            ? const Icon(Icons.shuffle_on_outlined)
-                            : const Icon(
-                                Icons.shuffle_outlined,
-                              ),
-                        onPressed: () async {
-                          if (sendIndex.value == -1) {
-                            final snackBar = SnackBar(
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                    Showcase(
+                      key: k2,
+                      description: "Randomize and Play",
+                      shapeBorder: const CircleBorder(),
+                      child: IconButton(
+                          iconSize: 64,
+                          icon: toggle
+                              ? const Icon(Icons.shuffle_on_outlined)
+                              : const Icon(
+                                  Icons.shuffle_outlined,
                                 ),
-                                backgroundColor: Colors.black.withOpacity(0.5),
-                                content: const Text(
-                                  "Please select a show",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                action: SnackBarAction(
-                                    label: "Select",
-                                    onPressed: () async {
-                                      await searchInitiate();
-                                      _openModal(context);
-                                    }));
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
-                            return;
-                          }
-                          setState(() {
-                            toggle = !toggle;
-                            _launchUrl();
-                          });
-                          await Future.delayed(const Duration(seconds: 2));
-                          setState(() {
-                            toggle = !toggle;
-                          });
-                        }),
+                          onPressed: () async {
+                            if (sendIndex.value == -1) {
+                              final snackBar = SnackBar(
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  backgroundColor:
+                                      Colors.black.withOpacity(0.5),
+                                  content: const Text(
+                                    "Please select a show",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  action: SnackBarAction(
+                                      label: "Select",
+                                      onPressed: () async {
+                                        await searchInitiate();
+
+                                        _openModal(context);
+                                      }));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                              return;
+                            }
+                            setState(() {
+                              toggle = !toggle;
+                              _launchUrl();
+                            });
+                            await Future.delayed(const Duration(seconds: 2));
+                            setState(() {
+                              toggle = !toggle;
+                            });
+                          }),
+                    ),
                     Center(
                       child: Transform.rotate(
                           angle: 3.14 / 2,
@@ -226,25 +380,37 @@ class _OnlineHomeState extends State<OnlineHome> {
                                 ? Colors.transparent
                                 : Colors.black.withOpacity(0.2),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: InkWell(
-                              // style: TextButton.styleFrom(
-                              //     splashFactory: NoSplash.splashFactory),
-                              borderRadius: BorderRadius.circular(18),
-                              child: Center(
-                                child: Text(
-                                  "Shuffle",
-                                  style: TextStyle(
-                                      fontSize: 58,
-                                      color: Colors.black.withOpacity(0.2)),
+                          child: Showcase(
+                            key: k1,
+                            description: "Click here to select a show",
+                            shapeBorder: const CircleBorder(),
+                            contentPadding: const EdgeInsets.all(16),
+                            // disposeOnTap: true,
+                            // onTargetClick: () async {
+                            //   await searchInitiate();
+                            //   _openModal(context);
+                            // },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                // style: TextButton.styleFrom(
+                                //     splashFactory: NoSplash.splashFactory),
+                                borderRadius: BorderRadius.circular(18),
+                                child: Center(
+                                  child: Text(
+                                    "Shuffle",
+                                    style: TextStyle(
+                                        fontSize: 58,
+                                        color: Colors.black.withOpacity(0.2)),
+                                  ),
                                 ),
-                              ),
 
-                              onTap: () async {
-                                await searchInitiate();
-                                _openModal(context);
-                              },
+                                onTap: () async {
+                                  await searchInitiate();
+
+                                  _openModal(context);
+                                },
+                              ),
                             ),
                           ),
                         );
@@ -255,9 +421,9 @@ class _OnlineHomeState extends State<OnlineHome> {
                 ),
               ],
             ),
-          );
-        }),
-      ),
+          ),
+        );
+      }),
     );
   }
 }

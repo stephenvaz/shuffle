@@ -1,4 +1,4 @@
-package com.example.shuffle
+package com.stephen.shuffle
 
 import io.flutter.embedding.android.FlutterActivity
 

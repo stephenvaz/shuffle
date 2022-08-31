@@ -1,5 +1,5 @@
 name: shuffle
-description: A new Flutter project.
+description: An amazing Flutter project, by Yours Truly; Teddy.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -32,6 +32,8 @@ dependencies:
     sdk: flutter
   flutter_email_sender: ^5.1.0
   http: ^0.13.4
+  shared_preferences: ^2.0.15
+  showcaseview: ^1.1.8
   url_launcher: ^6.1.2
 
 dev_dependencies:
