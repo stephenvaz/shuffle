@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shuffle/Screens/search.dart';
-import 'package:shuffle/mediaEngine/data.dart';
+import 'package:shuffle/mediaEngine/coreF.dart';
 import 'package:shuffle/mediaEngine/db.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +10,8 @@ import 'dart:math';
 
 //bool for background(gif/nothing)
 
-void main() {
+void main() async {
+  await rData();
   runApp(const MyApp());
 }
 
@@ -26,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   //temp
 
   void _launchUrl() async {
-    var showUrl = hotstar["url"][sendIndex.value];
+    var showUrl = Data.dbdt?["url"][sendIndex.value];
     final Uri _url = Uri.parse(randoMize(showUrl, sendIndex.value));
     if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
       throw 'Could not launch $_url';

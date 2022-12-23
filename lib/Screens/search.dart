@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:shuffle/mediaEngine/data.dart';
 import 'package:shuffle/mediaEngine/db.dart';
 
 var sendIndex = ValueNotifier(-1);
@@ -13,8 +12,9 @@ class SearchSheet extends StatefulWidget {
 }
 
 class _SearchSheetState extends State<SearchSheet> {
-  var index = hotstar["name"].length;
-
+  var index = Data.dbdt?["name"].length;
+  var tempData = Data.dbdt;
+  TextEditingController searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return BackdropFilter(
@@ -25,7 +25,6 @@ class _SearchSheetState extends State<SearchSheet> {
       child: GestureDetector(
         onTap: () {
           FocusScopeNode currentFocus = FocusScope.of(context);
-
           if (!currentFocus.hasPrimaryFocus) {
             currentFocus.unfocus();
           }
@@ -53,6 +52,11 @@ class _SearchSheetState extends State<SearchSheet> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
                 child: TextFormField(
+                  // controller: searchController,
+                  onChanged: (value) {
+                    // print(value);
+                    updateList(value);
+                  },
                   cursorColor: Colors.grey,
                   textAlign: TextAlign.start,
                   decoration: InputDecoration(
@@ -132,8 +136,8 @@ class _SearchSheetState extends State<SearchSheet> {
                                     height: 100,
                                     width: 70,
                                     fit: BoxFit.fill,
-                                    image:
-                                        NetworkImage(hotstar["image"][index]),
+                                    image: NetworkImage(
+                                        Data.dbdt?["image"][index]),
                                   ),
                                 ),
 
@@ -141,11 +145,11 @@ class _SearchSheetState extends State<SearchSheet> {
                                 Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(16, 0, 0, 0),
-                                  child: Container(
+                                  child: SizedBox(
                                     width: MediaQuery.of(context).size.width *
                                         0.45,
                                     child: Text(
-                                      hotstar["name"][index],
+                                      Data.dbdt?["name"][index],
                                       style: const TextStyle(fontSize: 20),
                                     ),
                                   ),
@@ -157,14 +161,14 @@ class _SearchSheetState extends State<SearchSheet> {
                                   onPressed: () {
                                     // print(hotstar["name"].length);
                                     setState(() {
-                                      hotstar["fav"][index] =
-                                          !hotstar["fav"][index];
+                                      Data.dbdt?["fav"][index] =
+                                          !Data.dbdt?["fav"][index];
                                     });
                                   },
-                                  color: hotstar["fav"][index]
+                                  color: Data.dbdt?["fav"][index]
                                       ? Colors.red
                                       : null,
-                                  icon: hotstar["fav"][index]
+                                  icon: Data.dbdt?["fav"][index]
                                       ? const Icon(Icons.favorite)
                                       : const Icon(
                                           Icons.favorite_border,
@@ -184,5 +188,13 @@ class _SearchSheetState extends State<SearchSheet> {
         ),
       ),
     );
+  }
+
+  void updateList(String searchString) {
+        //temp data always has the original data
+
+        //depending on the search string, we will filter the data
+        //and update the list
+  
   }
 }
